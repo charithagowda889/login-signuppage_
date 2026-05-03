@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auth App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: #667eea;
+      color: white;
+    }
+
+    button {
+    cursor: pointer;
+   } 
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .btn-custom {
+      background-color: #667eea;
+      color: white;
+    }
+    .btn-custom:hover {
+      background-color: #5a67d8;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <div class="card p-4 mb-4">
+
+  <!-- Toggle Buttons -->
+<div class="d-flex mb-3">
+  <button id="loginBtn" class="btn btn-primary w-50" onclick="showLogin()">Login</button>
+  <button id="signupBtn" class="btn btn-outline-primary w-50" onclick="showSignup()">Signup</button>
+</div>
+
+  <!-- Login Form -->
+  <div id="loginForm">
+    <input id="li_user" class="form-control mb-2" placeholder="Username">
+    <input id="li_pass" class="form-control mb-2" type="password" placeholder="Password">
+    <button class="btn btn-success w-100" onclick="login()">Login</button>
+  </div>
+
+  <!-- Signup Form -->
+  <div id="signupForm" style="display:none;">
+    <input id="su_user" class="form-control mb-2" placeholder="Username">
+    <input id="su_pass" class="form-control mb-2" type="password" placeholder="Password">
+    <button class="btn btn-custom w-100" onclick="signup()">Signup</button>
+  </div>
+
+</div>
+      <div class="card p-4">
+        <h4 class="text-center">Profile</h4>
+        <button class="btn btn-info w-100 mb-2" onclick="getProfile()">Get Profile</button>
+        <input id="role" class="form-control mb-2" placeholder="Role">
+        <input id="location" class="form-control mb-2" placeholder="Location">
+        <input id="company" class="form-control mb-2" placeholder="Company">
+        <button class="btn btn-warning w-100" onclick="updateProfile()">Update Profile</button>
+      </div>
+
+      <div class="card p-3 mt-3">
+        <pre id="output"></pre>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>function showLogin() {
+  document.getElementById("loginForm").style.display = "block";
+  document.getElementById("signupForm").style.display = "none";
+
+  // Active style
+  loginBtn.classList.add("btn-primary");
+  loginBtn.classList.remove("btn-outline-primary");
+
+  // Inactive style
+  signupBtn.classList.add("btn-outline-primary");
+  signupBtn.classList.remove("btn-primary");
+}
+
+function showSignup() {
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("signupForm").style.display = "block";
+
+  // Active style
+  signupBtn.classList.add("btn-primary");
+  signupBtn.classList.remove("btn-outline-primary");
+
+  // Inactive style
+  loginBtn.classList.add("btn-outline-primary");
+  loginBtn.classList.remove("btn-primary");
+}
+
+function signup() {
+  fetch('/signup', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('su_user').value,
+      password: document.getElementById('su_pass').value
+    })
+  }).then(r=>r.json()).then(d=>output(d));
+}
+
+function login() {
+  fetch('/login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('li_user').value,
+      password: document.getElementById('li_pass').value
+    })
+  }).then(r=>r.json()).then(d=>{
+    token = d.access_token;
+    output(d);
+  });
+}
+
+function getProfile() {
+  fetch('/profile', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(r=>r.json()).then(d=>output(d));
+}
+
+function updateProfile() {
+  fetch('/profile', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+      role: document.getElementById('role').value,
+      location: document.getElementById('location').value,
+      company: document.getElementById('company').value
+    })
+  }).then(r=>r.json()).then(d=>output(d));
+}
+
+function output(data){
+  let html = "";
+
+  if (data.msg) {
+    html = `<div class="alert alert-info">${data.msg}</div>`;
+  } else {
+    html =`
+  <div class="profile-text">
+    <b>Username:</b> ${data.username || ""}
+    <b>Role:</b> ${data.role || ""}
+    <b>Location:</b> ${data.location || ""}
+    <b>Company:</b> ${data.company || ""}
+  </div>
+`;
+  }
+  const outputDiv = document.getElementById('output');
+  outputDiv.innerHTML = html;
+
+  // 🔽 AUTO SCROLL HERE
+  outputDiv.scrollIntoView({ behavior: "smooth" });
+
+  document.getElementById('output').innerHTML = html;
+}
+</script>
+
+</body>
+</html>
