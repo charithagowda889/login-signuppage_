@@ -6,8 +6,11 @@ It demonstrates how modern authentication systems work using JWT (JSON Web Token
 **Technologies Used**
 
 Frontend: HTML5, CSS3 (Bootstrap + custom styling),JavaScript.
+
 Backend: Python Flask Framework, Flask-JWT-Extended (Authentication).
+
 Database: SQLite3, SQLAlchemy ORM.
+
 Security: Werkzeug (Password hashing), JWT Token Authentication.
 
 **1. User Registration (Signup)**
