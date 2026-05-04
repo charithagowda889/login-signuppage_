@@ -81,7 +81,9 @@
   </div>
 </div>
 
-<script>function showLogin() {
+<script>
+const BASE_URL = "https://your-app.onrender.com";
+function showLogin() {
   document.getElementById("loginForm").style.display = "block";
   document.getElementById("signupForm").style.display = "none";
 
@@ -108,7 +110,7 @@ function showSignup() {
 }
 
 function signup() {
-  fetch('/signup', {
+  fetch(`${BASE_URL}/signup`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -119,7 +121,7 @@ function signup() {
 }
 
 function login() {
-  fetch('/login', {
+  fetch(`${BASE_URL}/login`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -133,7 +135,7 @@ function login() {
 }
 
 function getProfile() {
-  fetch('/profile', {
+  fetch(`${BASE_URL}/profile`, {
     headers: { 'Authorization': 'Bearer ' + token }
   }).then(r=>r.json()).then(d=>output(d));
 }
@@ -168,6 +170,29 @@ function output(data){
   </div>
 `;
   }
+
+  function updateProfile() {
+  let data = {};
+
+  let role = document.getElementById('role').value.trim();
+  let location = document.getElementById('location').value.trim();
+  let company = document.getElementById('company').value.trim();
+
+  if (role !== "") data.role = role;
+  if (location !== "") data.location = location;
+  if (company !== "") data.company = company;
+
+  fetch('/profile', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(data => output(data));
+}
   const outputDiv = document.getElementById('output');
   outputDiv.innerHTML = html;
 
