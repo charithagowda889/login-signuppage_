@@ -5,6 +5,8 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash  
 from flask_jwt_extended import create_access_token
 
+from flask_cors import CORS
+CORS(app)
 
 # Create Flask app instance
 app = Flask(__name__, static_folder='static')
@@ -124,4 +126,4 @@ def update_profile():
 
 # Run the Flask application
 if __name__ == '__main__':
-    app.run(debug=True)  # debug=True enables auto-reload and error logs
+    app.run(host="0.0.0.0", port=5000)  # debug=True enables auto-reload and error logs
