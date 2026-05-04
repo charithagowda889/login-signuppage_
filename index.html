@@ -141,7 +141,7 @@ function getProfile() {
 }
 
 function updateProfile() {
-  fetch('/profile', {
+  fetch(`${BASE_URL}/profile`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
