@@ -1,4 +1,5 @@
-**login-signup-page**
+**Login-Signup-Page**
+
 This project is a backend authentication system built using a lightweight Python framework such as Flask. 
 It demonstrates how modern authentication systems work using JWT (JSON Web Tokens) and a simple SQLite database.
 **Technologies Used**
