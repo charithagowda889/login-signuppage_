@@ -17,20 +17,98 @@
       color: white;
     }
     button {
-    cursor: pointer;
-   } 
-
+      cursor: pointer;
+    }
     .card {
       border-radius: 15px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-
     .btn-custom {
       background-color: #667eea;
       color: white;
     }
     .btn-custom:hover {
       background-color: #5a67d8;
+    }
+
+    /* Profile Details Title */
+    .profile-details-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #0406129a;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    /* Profile details box */
+    .profile-detail-box {
+      background: linear-gradient(135deg, #f8f5fa, #e8ecf1);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .profile-detail-box .detail-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #dde2ea;
+    }
+    .profile-detail-box .detail-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .profile-detail-box .detail-item:first-child {
+      padding-top: 0;
+    }
+    .profile-detail-box .detail-label {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 1rem;
+      width: 110px;
+      flex-shrink: 0;
+    }
+    .profile-detail-box .detail-value {
+      color: #222;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .empty {
+      color: #bbb;
+      font-style: italic;
+      font-size: 0.88rem;
+      font-weight: 400;
+    }
+
+    /* Edit / Update button */
+    .btn-edit-small {
+      background-color: #667eea;
+      color: white;
+      font-size: 0.82rem;
+      padding: 6px 20px;
+      border-radius: 20px;
+      border: none;
+      transition: background 0.2s;
+      font-weight: 600;
+    }
+    .btn-edit-small:hover {
+      background-color: #5a67d8;
+      color: white;
+    }
+    .btn-update-small {
+      background-color: #38a169;
+      color: white;
+      font-size: 0.82rem;
+      padding: 6px 20px;
+      border-radius: 20px;
+      border: none;
+      transition: background 0.2s;
+      font-weight: 600;
+    }
+    .btn-update-small:hover {
+      background-color: #2f855a;
+      color: white;
     }
   </style>
 </head>
@@ -41,14 +119,13 @@
   <div class="row justify-content-center">
     <div class="col-md-5">
 
+      <!-- AUTH SECTION -->
       <div class="card p-4 mb-4" id="authSection">
 
-
-        <!-- Toggle Buttons -->
         <div class="d-flex mb-3">
           <button id="loginBtn" class="btn btn-primary w-50" onclick="showLogin()">Login</button>
           <button id="signupBtn" class="btn btn-outline-primary w-50" onclick="showSignup()">Signup</button>
-          </div>
+        </div>
 
         <div id="loginForm">
           <input id="li_user" class="form-control mb-2" placeholder="Username">
@@ -56,7 +133,6 @@
           <button class="btn btn-success w-100" onclick="login()">Login</button>
         </div>
 
-        
         <div id="signupForm" style="display:none;">
           <input id="su_user" class="form-control mb-2" placeholder="Username">
           <input id="su_pass" class="form-control mb-2" type="password" placeholder="Password">
@@ -64,20 +140,50 @@
         </div>
 
       </div>
+
+      <!-- PROFILE SECTION -->
       <div class="card p-4" id="profileSection" style="display:none;">
-        <h4 class="text-center">Profile</h4>
 
-        <button class="btn btn-info w-100 mb-2" onclick="getProfile()">Get Profile</button>
+        <!-- WELCOME MESSAGE -->
+        <h4 class="text-center mb-3" id="welcomeMsg"></h4>
 
-        <input id="role" class="form-control mb-2" placeholder="Role">
-        <input id="location" class="form-control mb-2" placeholder="Location">
-        <input id="company" class="form-control mb-2" placeholder="Company">
+        <!-- PROFILE DETAILS TITLE + EDIT BUTTON on same line -->
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="profile-details-title">📋 Profile Details</span>
+          <button id="editUpdateBtn" class="btn-edit-small" onclick="handleEditUpdate()">✏️ Edit Profile</button>
+        </div>
 
-        <button class="btn btn-warning w-100" onclick="updateProfile()">Update Profile</button>
+        <!-- PROFILE DETAILS BOX -->
+        <div class="profile-detail-box">
+          <div class="detail-item">
+            <span class="detail-label">👤 Username</span>
+            <span class="detail-value" id="detail_username"><span class="empty">Not set</span></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">💼 Role</span>
+            <span class="detail-value" id="detail_role"><span class="empty">Not set</span></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">📍 Location</span>
+            <span class="detail-value" id="detail_location"><span class="empty">Not set</span></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">🏢 Company</span>
+            <span class="detail-value" id="detail_company"><span class="empty">Not set</span></span>
+          </div>
+        </div>
+
+        <!-- PROFILE INPUTS (hidden by default) -->
+        <div id="profileInputs" style="display:none;" class="mt-1 mb-2">
+          <input id="role" class="form-control mb-2" placeholder="Role" oninput="onTyping()">
+          <input id="location" class="form-control mb-2" placeholder="Location" oninput="onTyping()">
+          <input id="company" class="form-control mb-2" placeholder="Company" oninput="onTyping()">
+        </div>
 
         <button class="btn btn-danger w-100 mt-2" onclick="logout()">Logout</button>
       </div>
 
+      <!-- OUTPUT -->
       <div class="card p-3 mt-3">
         <div id="output"></div>
       </div>
@@ -90,42 +196,38 @@
 const BASE_URL = "https://login-signup-page-7.onrender.com";
 
 let token = localStorage.getItem('token') || "";
+let isEditing = false;
 
 window.onload = function() {
   if (token) {
     authSection.style.display = "none";
     profileSection.style.display = "block";
+
+    const username = localStorage.getItem('username');
+    if (username) {
+      document.getElementById('welcomeMsg').textContent = `Welcome! ${username}`;
+    }
+
+    getProfile();
   }
 };
 
 function showLogin() {
   loginForm.style.display = "block";
   signupForm.style.display = "none";
-
-  // Active style
   loginBtn.classList.add("btn-primary");
   loginBtn.classList.remove("btn-outline-primary");
-
-  // Inactive style
   signupBtn.classList.add("btn-outline-primary");
   signupBtn.classList.remove("btn-primary");
-
 }
-
 
 function showSignup() {
   loginForm.style.display = "none";
   signupForm.style.display = "block";
-
-  // Active style
   signupBtn.classList.add("btn-primary");
   signupBtn.classList.remove("btn-outline-primary");
-
-  // Inactive style
   loginBtn.classList.add("btn-outline-primary");
   loginBtn.classList.remove("btn-primary");
-
-  
 }
 
 function signup() {
@@ -152,134 +254,152 @@ function login() {
   })
   .then(r => r.json())
   .then(d => {
-  
     if (!d.access_token) {
-      output({ msg: d.msg || "Login failed" });
-
+      output({ msg: d.msg || "Login failed", type: "error" });
       li_user.value = "";
       li_pass.value = "";
       return;
     }
 
     token = d.access_token;
-   
     localStorage.setItem('token', token);
 
-    // Hide token from UI
-    output({ msg: "Login successful" });
+    const username = li_user.value;
+    localStorage.setItem('username', username);
+    document.getElementById('welcomeMsg').textContent = `Welcome! ${username}`;
 
+    output({ msg: "Login successful ✅" });
     profileSection.style.display = "block";
     authSection.style.display = "none";
+
+    getProfile();
   });
 }
 
 function getProfile() {
   fetch(`${BASE_URL}/profile`, {
     method: "GET",
-    headers: {
-      "Authorization": "Bearer " + token
-    }
+    headers: { "Authorization": "Bearer " + token }
   })
   .then(r => r.json())
   .then(d => {
-  
     if (d.msg && !d.username) {
-      output({ msg: d.msg });
+      output({ msg: d.msg, type: "error" });
       return;
     }
 
-    // show only success-style output
-    output({
-      username: d.username,
-      role:     d.role,
-      location: d.location,
-      company:  d.company
-    });
-
+    setDetail('detail_username', d.username);
+    setDetail('detail_role', d.role);
+    setDetail('detail_location', d.location);
+    setDetail('detail_company', d.company);
   });
 }
 
+function setDetail(id, value) {
+  const el = document.getElementById(id);
+  if (value) {
+    el.innerHTML = value;
+  } else {
+    el.innerHTML = `<span class="empty">Not set</span>`;
+  }
+}
+
+function handleEditUpdate() {
+  if (!isEditing) {
+    // Show inputs — enter edit mode
+    document.getElementById('profileInputs').style.display = "block";
+    isEditing = true;
+  } else {
+    // Validate — at least one field must be filled
+    const role     = document.getElementById('role').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const company  = document.getElementById('company').value.trim();
+
+    if (!role && !location && !company) {
+      output({ msg: "⚠️ Please fill at least one field to update!", type: "error" });
+      return;
+    }
+
+    updateProfile();
+  }
+}
+
+function onTyping() {
+  const btn = document.getElementById('editUpdateBtn');
+  btn.textContent = "✅ Update Profile";
+  btn.className = "btn-update-small";
+}
+
 function updateProfile() {
+  const role     = document.getElementById('role').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const company  = document.getElementById('company').value.trim();
+
   fetch(`${BASE_URL}/profile`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + token
     },
-    body: JSON.stringify({
-      role:     document.getElementById('role').value,
-      location: document.getElementById('location').value,
-      company:  document.getElementById('company').value
-    })
+    body: JSON.stringify({ role, location, company })
   })
   .then(r => r.json())
   .then(d => {
-    
-    output({
-      msg:      d.msg
-    });
-    if (d.msg) {
-      document.getElementById('role').value = "";
-      document.getElementById('location').value = "";
-      document.getElementById('company').value = "";
-    }
+    output({ msg: "Profile updated successfully ✅" });
 
+    // Clear and hide inputs
+    document.getElementById('role').value = "";
+    document.getElementById('location').value = "";
+    document.getElementById('company').value = "";
+    document.getElementById('profileInputs').style.display = "none";
+
+    // Reset button
+    const btn = document.getElementById('editUpdateBtn');
+    btn.textContent = "✏️ Edit Profile";
+    btn.className = "btn-edit-small";
+    isEditing = false;
+
+    // Refresh profile details
+    getProfile();
   });
 }
 
 function logout() {
   token = "";
-
   localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  document.getElementById('welcomeMsg').textContent = "";
+
+  isEditing = false;
+  document.getElementById('profileInputs').style.display = "none";
+  const btn = document.getElementById('editUpdateBtn');
+  btn.textContent = "✏️ Edit Profile";
+  btn.className = "btn-edit-small";
+
+  setDetail('detail_username', '');
+  setDetail('detail_role', '');
+  setDetail('detail_location', '');
+  setDetail('detail_company', '');
 
   profileSection.style.display = "none";
   authSection.style.display = "block";
 
   li_user.value = "";
   li_pass.value = "";
-
   su_user.value = "";
   su_pass.value = "";
 
-  role.value = "";
-  location.value = "";
-  company.value = "";
-
   showLogin();
-
   output({ msg: "Logged out successfully" });
 }
 
-// Output 
 function output(data) {
-  let html = "";
-
-  if (data.msg) {
-    let profileHtml = "";
-    if (data.username) {
-      profileHtml = `
-        <hr>
-        <b>Username:</b> ${data.username || ""}<br>
-        <b>Role:</b> ${data.role || ""}<br>
-        <b>Location:</b> ${data.location || ""}<br>
-        <b>Company:</b> ${data.company || ""}
-      `;
-    }
-    html = `<div class="alert alert-success">${data.msg}</div>` + profileHtml;
-  } else {
-    html = `
-      <div>
-        <b>Username:</b> ${data.username || ""}<br>
-        <b>Role:</b> ${data.role || ""}<br>
-        <b>Location:</b> ${data.location || ""}<br>
-        <b>Company:</b> ${data.company || ""}
-      </div>
-    `;
-  }
-
   const outputDiv = document.getElementById('output');
-  outputDiv.innerHTML = html;
-
+  if (data.type === "error") {
+    outputDiv.innerHTML = `<div class="alert alert-warning mb-0">${data.msg}</div>`;
+  } else {
+    outputDiv.innerHTML = `<div class="alert alert-success mb-0">${data.msg}</div>`;
+  }
 }
 </script>
 
