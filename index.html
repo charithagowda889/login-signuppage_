@@ -12,6 +12,13 @@
       justify-content: center;
       align-items: center;
     }
+    .btn-outline-primary:hover {
+      background-color: #667eea;
+      color: white;
+    }
+    button {
+    cursor: pointer;
+   } 
 
     .card {
       border-radius: 15px;
@@ -21,6 +28,9 @@
     .btn-custom {
       background-color: #667eea;
       color: white;
+    }
+    .btn-custom:hover {
+      background-color: #5a67d8;
     }
   </style>
 </head>
@@ -34,12 +44,13 @@
       <!-- AUTH SECTION -->
       <div class="card p-4 mb-4" id="authSection">
 
-        <div class="d-flex mb-3">
-          <button class="btn btn-primary w-50" onclick="showLogin()">Login</button>
-          <button class="btn btn-outline-primary w-50" onclick="showSignup()">Signup</button>
-        </div>
 
-        <!-- Login -->
+        <!-- Toggle Buttons -->
+        <div class="d-flex mb-3">
+          <button id="loginBtn" class="btn btn-primary w-50" onclick="showLogin()">Login</button>
+          <button id="signupBtn" class="btn btn-outline-primary w-50" onclick="showSignup()">Signup</button>
+          </div>
+
         <div id="loginForm">
           <input id="li_user" class="form-control mb-2" placeholder="Username">
           <input id="li_pass" class="form-control mb-2" type="password" placeholder="Password">
@@ -81,16 +92,44 @@
 
 <script>
 const BASE_URL = "https://login-signup-page-4.onrender.com";
-let token = "";
+
+let token = localStorage.getItem('token') || "";
+
+window.onload = function() {
+  if (token) {
+    authSection.style.display = "none";
+    profileSection.style.display = "block";
+  }
+};
 
 function showLogin() {
   loginForm.style.display = "block";
   signupForm.style.display = "none";
+
+  // Active style
+  loginBtn.classList.add("btn-primary");
+  loginBtn.classList.remove("btn-outline-primary");
+
+  // Inactive style
+  signupBtn.classList.add("btn-outline-primary");
+  signupBtn.classList.remove("btn-primary");
+
 }
+
 
 function showSignup() {
   loginForm.style.display = "none";
   signupForm.style.display = "block";
+
+  // Active style
+  signupBtn.classList.add("btn-primary");
+  signupBtn.classList.remove("btn-outline-primary");
+
+  // Inactive style
+  loginBtn.classList.add("btn-outline-primary");
+  loginBtn.classList.remove("btn-primary");
+
+  
 }
 
 function signup() {
@@ -103,7 +142,8 @@ function signup() {
     })
   })
   .then(r => r.json())
-  .then(d => output(d));
+  // FIX: show the msg from server (covers both success and "User exists" error)
+  .then(d => output({ msg: d.msg }));
 }
 
 function login() {
@@ -117,7 +157,15 @@ function login() {
   })
   .then(r => r.json())
   .then(d => {
+    // FIX: check token exists before switching to profile view
+    if (!d.access_token) {
+      output({ msg: d.msg || "Login failed" });
+      return;
+    }
+
     token = d.access_token;
+    // FIX: save token to localStorage
+    localStorage.setItem('token', token);
 
     // Hide token from UI
     output({ msg: "Login successful" });
@@ -129,33 +177,67 @@ function login() {
 
 function getProfile() {
   fetch(`${BASE_URL}/profile`, {
+    method: "GET",
     headers: {
-      'Authorization': 'Bearer ' + token
+      "Authorization": "Bearer " + token
     }
   })
   .then(r => r.json())
-  .then(d => output(d));
+  .then(d => {
+    // FIX: check for error response from server
+    if (d.msg && !d.username) {
+      output({ msg: d.msg });
+      return;
+    }
+
+    // fill inputs
+    role.value     = d.role     || "";
+    location.value = d.location || "";
+    company.value  = d.company  || "";
+
+    // show only success-style output
+    output({
+      username: d.username,
+      role:     d.role,
+      location: d.location,
+      company:  d.company
+    });
+
+  });
 }
 
 function updateProfile() {
   fetch(`${BASE_URL}/profile`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
     },
     body: JSON.stringify({
-      role: role.value,
-      location: location.value,
-      company: company.value
+      role:     document.getElementById('role').value,
+      location: document.getElementById('location').value,
+      company:  document.getElementById('company').value
     })
   })
   .then(r => r.json())
-  .then(d => output(d));
+  .then(d => {
+    // FIX: backend now returns username/role/location/company along with msg
+    // so we can display all fields correctly
+    output({
+      msg:      d.msg,
+      username: d.username,
+      role:     d.role,
+      location: d.location,
+      company:  d.company
+    });
+
+  });
 }
 
 function logout() {
   token = "";
+  // FIX: clear token from localStorage on logout
+  localStorage.removeItem('token');
 
   // Hide profile, show auth
   profileSection.style.display = "none";
@@ -185,7 +267,17 @@ function output(data) {
   let html = "";
 
   if (data.msg) {
-    html = `<div class="alert alert-success">${data.msg}</div>`;
+    let profileHtml = "";
+    if (data.username) {
+      profileHtml = `
+        <hr>
+        <b>Username:</b> ${data.username || ""}<br>
+        <b>Role:</b> ${data.role || ""}<br>
+        <b>Location:</b> ${data.location || ""}<br>
+        <b>Company:</b> ${data.company || ""}
+      `;
+    }
+    html = `<div class="alert alert-success">${data.msg}</div>` + profileHtml;
   } else {
     html = `
       <div>
@@ -197,7 +289,9 @@ function output(data) {
     `;
   }
 
-  document.getElementById('output').innerHTML = html;
+  const outputDiv = document.getElementById('output');
+  outputDiv.innerHTML = html;
+
 }
 </script>
 
