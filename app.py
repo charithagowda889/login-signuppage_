@@ -6,10 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 
 from flask_cors import CORS
-CORS(app)
+
 
 # Create Flask app instance
 app = Flask(__name__, static_folder='static')
+CORS(app)
 
 # Configure database (SQLite file will be created as users.db)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
