@@ -1,9 +1,8 @@
 # Import required libraries from Flask and other packages
 from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy  # ORM to interact with database using Python classes
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from werkzeug.security import generate_password_hash, check_password_hash  
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_cors import CORS
 
@@ -76,18 +75,18 @@ def login():
     # Check if user exists AND password is correct
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'msg': 'Invalid credentials'}), 401
-    
-    # Generate JWT token using user ID as identity
+
     token = create_access_token(identity=str(user.id))
 
     return jsonify(access_token=token)  # Send token to client
 
 
 @app.route('/profile', methods=['GET'])
-@jwt_required()  # Requires valid JWT token
+@jwt_required()
 def get_profile():
-    # Get user ID from JWT token
-    user = User.query.get(get_jwt_identity())
+    user_id = get_jwt_identity()  # Returns string (as we stored it)
+
+    user = db.session.get(User, int(user_id))
 
     # Return user details
     return jsonify({
@@ -101,10 +100,9 @@ def get_profile():
 @app.route('/profile', methods=['POST'])
 @jwt_required()
 def update_profile():
-    # Get user ID from token
-    user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
+    user_id = get_jwt_identity()
 
+    user = db.session.get(User, int(user_id))
     data = request.get_json()  # Get JSON data
 
     # Update fields only if present and not empty
@@ -120,9 +118,15 @@ def update_profile():
     # Save updated data
     db.session.commit()
 
-    return jsonify({"msg": "Profile updated"})
+    return jsonify({
+        'msg': 'Profile updated',
+        'username': user.username,
+        'role': user.role,
+        'location': user.location,
+        'company': user.company
+    })
 
 
 # Run the Flask application
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)  # debug=True enables auto-reload and error logs
+    app.run(host="0.0.0.0", port=5000)  
