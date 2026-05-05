@@ -54,6 +54,7 @@ def show_db():
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Unique ID
     username = db.Column(db.String(100), unique=True)  # Username must be unique
+    email = db.column(db.String(150), unique=True)
     password = db.Column(db.String(200))  # Stores hashed password
     role = db.Column(db.String(100))  # Optional user role
     location = db.Column(db.String(100))  # Optional location
