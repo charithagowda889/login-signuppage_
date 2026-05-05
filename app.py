@@ -123,7 +123,8 @@ def get_profile():
         'username': user.username,
         'role': user.role,
         'location': user.location,
-        'company': user.company
+        'company': user.company,
+        'email': user.email
     })
 
 
@@ -144,6 +145,9 @@ def update_profile():
 
     if 'company' in data and data['company']:
         user.company = data['company']
+
+    if 'email' in data and data['email']:
+        user.email = data['email']
 
     # Save updated data
     db.session.commit()
