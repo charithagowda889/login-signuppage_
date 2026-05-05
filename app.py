@@ -27,18 +27,28 @@ app.config['JWT_SECRET_KEY'] = 'secret-key'
 db = SQLAlchemy(app)  # ORM setup
 jwt = JWTManager(app)  # JWT authentication setup
 
-@app.route('/admin/users')
-def get_all_users():
-    users = User.query.all()
+from sqlalchemy import inspect, text
 
-    return jsonify([
-        {
-            "username": u.username,
-            "role": u.role,
-            "location": u.location,
-            "company": u.company
-        } for u in users
-    ])
+@app.route('/admin/db', methods=['GET'])
+def show_db():
+    inspector = inspect(db.engine)
+    result = {}
+
+    for table_name in inspector.get_table_names():
+        # Get columns
+        columns = [col['name'] for col in inspector.get_columns(table_name)]
+
+        # Get data
+        with db.engine.connect() as conn:
+            rows = conn.execute(text(f'SELECT * FROM "{table_name}"')).fetchall()
+
+        result[table_name] = {
+            'columns': columns,
+            'total_rows': len(rows),
+            'data': [dict(zip(columns, row)) for row in rows]
+        }
+
+    return jsonify(result)
 
 # Define User model (table structure in database)
 class User(db.Model):
