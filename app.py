@@ -29,26 +29,6 @@ jwt = JWTManager(app)  # JWT authentication setup
 
 from sqlalchemy import inspect, text
 
-@app.route('/admin/db', methods=['GET'])
-def show_db():
-    inspector = inspect(db.engine)
-    result = {}
-
-    for table_name in inspector.get_table_names():
-        # Get columns
-        columns = [col['name'] for col in inspector.get_columns(table_name)]
-
-        # Get data
-        with db.engine.connect() as conn:
-            rows = conn.execute(text(f'SELECT * FROM "{table_name}"')).fetchall()
-
-        result[table_name] = {
-            'columns': columns,
-            'total_rows': len(rows),
-            'data': [dict(zip(columns, row)) for row in rows]
-        }
-
-    return jsonify(result)
 
 # Define User model (table structure in database)
 class User(db.Model):
