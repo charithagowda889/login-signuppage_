@@ -62,6 +62,7 @@ class User(db.Model):
 
 # Create database tables if not already created
 with app.app_context():
+    db.drop_all()
     db.create_all()
 
 
