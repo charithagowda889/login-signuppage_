@@ -240,6 +240,10 @@ function signup() {
     return;
   }
 
+  fetch("https://az-function-demo-fjdwcxagbzhvfpdq.centralindia-01.azurewebsites.net/api/hello")
+  .then(res => res.json())
+  .then(data => console.log(data))
+
   // 3. Send to backend
   fetch(`${BASE_URL}/signup`, {
     method: 'POST',
