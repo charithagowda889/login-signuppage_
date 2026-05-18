@@ -141,9 +141,9 @@
 
         <h4 class="text-center mb-3" id="welcomeMsg"></h4>
 
-        <!-- PROFILE DETAILS TITLE + EDIT BUTTON on same line -->
+        
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <span class="profile-details-title">📋 Profile Details</span>
+          <span class="profile-details-title"> Profile Details</span>
           <button id="editUpdateBtn" class="btn-edit-small" onclick="handleEditUpdate()">
             ✏️ Edit Profile
           </button>
@@ -151,19 +151,19 @@
 
         <div class="profile-detail-box">
           <div class="detail-item">
-            <span class="detail-label">👤 Username</span>
+            <span class="detail-label"> Username</span>
             <span class="detail-value" id="detail_username"><span class="empty">Not set</span></span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">💼 Role</span>
+            <span class="detail-label"> Role</span>
             <span class="detail-value" id="detail_role"><span class="empty">Not set</span></span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">📍 Location</span>
+            <span class="detail-label"> Location</span>
             <span class="detail-value" id="detail_location"><span class="empty">Not set</span></span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">🏢 Company</span>
+            <span class="detail-label">Company</span>
             <span class="detail-value" id="detail_company"><span class="empty">Not set</span></span>
           </div>
         </div>
@@ -187,7 +187,6 @@
 
 <script>
 const BASE_URL = "https://login-signup-page-8.onrender.com";
-
 let token = localStorage.getItem('token') || "";
 let isEditing = false;
 
@@ -204,6 +203,7 @@ window.onload = function() {
     getProfile();
   }
 };
+
 
 function showLogin() {
   loginForm.style.display = "block";
@@ -239,10 +239,6 @@ function signup() {
     output({ msg: "Passwords do not match!", type: "error" });
     return;
   }
-
-  fetch("https://az-function-demo-fjdwcxagbzhvfpdq.centralindia-01.azurewebsites.net/api/hello")
-  .then(res => res.json())
-  .then(data => console.log(data))
 
   // 3. Send to backend
   fetch(`${BASE_URL}/signup`, {
@@ -282,7 +278,7 @@ function login() {
     localStorage.setItem('username', username);
     document.getElementById('welcomeMsg').textContent = `Welcome! ${username}`;
 
-    output({ msg: "Login successful ✅" });
+    output({ msg: "Login successful " });
     profileSection.style.display = "block";
     authSection.style.display = "none";
 
@@ -324,7 +320,7 @@ function handleEditUpdate() {
   if (!isEditing) {
     document.getElementById('profileInputs').style.display = "block";
 
-    btn.textContent = "💾 Save";
+    btn.textContent = " Save";
     btn.className = "btn-update-small";
 
     isEditing = true;
@@ -336,7 +332,7 @@ function handleEditUpdate() {
   const company  = document.getElementById('company').value.trim();
 
   if (!role && !location && !company) {
-    output({ msg: "⚠️ Please fill at least one field!", type: "error" });
+    output({ msg: " Please fill at least one field!", type: "error" });
     return;
   }
 
@@ -345,7 +341,7 @@ function handleEditUpdate() {
 
 function onTyping() {
   const btn = document.getElementById('editUpdateBtn');
-  btn.textContent = "✅ Update Profile";
+  btn.textContent = " Update Profile";
   btn.className = "btn-update-small";
 }
 
@@ -364,7 +360,7 @@ function updateProfile() {
   })
   .then(r => r.json())
   .then(d => {
-    output({ msg: "Profile updated successfully ✅" });
+    output({ msg: "Profile updated successfully " });
 
     // reset inputs
     document.getElementById('role').value = "";
