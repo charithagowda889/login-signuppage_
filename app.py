@@ -12,25 +12,6 @@ import requests
 app = Flask(__name__, static_folder='static')
 CORS(app)
 
-@app.route('/signup', methods=['POST'])
-def signup():
-
-    data = request.get_json()
-
-    email = data['email']
-
-    url = "https://az-function-demo-fjdwcxagbzhvfpdq.centralindia-01.azurewebsites.net/api/hello"
-
-    response = requests.post(url, json={
-        "email": email
-    })
-
-    print(response.text)
-
-    return jsonify({
-        "message": "Signup successful"
-    })
-
 # Configure database (SQLite file will be created as users.db)
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
 
